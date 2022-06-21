@@ -41,7 +41,7 @@ class MailListViewController: UIViewController {
     
     lazy var containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(red: 255, green: 255, blue: 255, alpha: 0.3)
+        view.backgroundColor = UIColor(white: 1, alpha: 0.3)
         return view
     }()
     
