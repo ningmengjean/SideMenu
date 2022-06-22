@@ -37,8 +37,7 @@ class MailListViewController: UIViewController {
     @objc
     func slipOut(gestureRecognizer: UIPanGestureRecognizer) {
         let t = gestureRecognizer.translation(in: self.menuView)
-        
-        guard (t.x < 0 || self.menuView.frame.origin.x > 0) else { return }
+        guard (t.x < 0 || self.menuView.frame.origin.x > 0 ) else { return }
         switch gestureRecognizer.state {
         case .changed,.began:
             UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0, options: .curveEaseOut, animations: {
@@ -60,7 +59,7 @@ class MailListViewController: UIViewController {
                 }
             }
         default:
-            break
+            guard (t.x < 0 || self.menuView.frame.origin.x > 0 ) else { return }
         }
     }
     
