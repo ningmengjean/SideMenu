@@ -11,7 +11,7 @@ import Foundation
 class MailListViewController: UIViewController {
 
     var isSlideInMenuPresented = false
-    var pointOrigin: CGPoint?
+
     var slideInMenuPadding: CGFloat {
         if UIDevice.current.userInterfaceIdiom == .pad {
             return self.view.frame.width * 0.60
@@ -35,41 +35,6 @@ class MailListViewController: UIViewController {
     }
     
     @objc
-    func slipOut(sender: UIPanGestureRecognizer) {
-        let translation = sender.translation(in: self.menuView)
-        sender.maximumNumberOfTouches = 1
-        guard let gestureView = sender.view else { return }
-        guard (translation.x < 0 ) else { return }
-        gestureView.frame.origin = CGPoint(x: translation.x, y: 0)
-        switch sender.state {
-        case .began:
-            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0, options: .curveEaseOut, animations: {
-                if translation.x > 0 {
-                    return
-                } else {
-                    gestureView.transform = CGAffineTransform(translationX: translation.x, y: 0)
-                }
-            })
-        case .ended:
-            if -translation.x < gestureView.frame.width/2 {
-                UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0, options: .curveEaseOut, animations: {
-                    gestureView.frame.origin = CGPoint(x: 0, y: 0)
-                })
-            } else {
-                UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0, options: .curveEaseInOut) { [self] in
-                    gestureView.transform = CGAffineTransform(translationX: -gestureView.frame.width, y: 0)
-                    self.maskView.isHidden = true
-                } completion: { (finished) in
-                    print("Animation finished: \(finished)")
-                    self.isSlideInMenuPresented.toggle()
-                }
-            }
-        default:
-           break
-        }
-    }
-    
-    @objc
     func swipeLeft() {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: .curveEaseInOut) { [self] in
             self.menuView.frame.origin.x = self.isSlideInMenuPresented ? -(view.frame.width - slideInMenuPadding) : 0
@@ -83,14 +48,11 @@ class MailListViewController: UIViewController {
     
     lazy var menuView: UIView = {
         let view = UIView()
-        pointOrigin = CGPoint(x: 0, y: 0)
         view.backgroundColor = .green
         if UIDevice.current.userInterfaceIdiom == .phone {
-            let gesture = UIPanGestureRecognizer(target: self, action: #selector(self.slipOut))
-            view.addGestureRecognizer(gesture)
-//            let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(self.swipeLeft))
-//            swipeLeft.direction = .left
-//            self.view.addGestureRecognizer(swipeLeft)
+            let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(self.swipeLeft))
+            swipeLeft.direction = .left
+            self.view.addGestureRecognizer(swipeLeft)
             view.isUserInteractionEnabled = true
         }
         return view
@@ -125,7 +87,7 @@ class MailListViewController: UIViewController {
             menuView.pinMenuTo(view, with: (view.frame.width - slideInMenuPadding))
         } else {
             containerView.ipadContainerEdgeTo(view, with: slideInMenuPadding)
-            menuView.ipadpinMenuTo(view, with: (view.frame.width - slideInMenuPadding))
+            menuView.ipadPinMenuTo(view, with: (view.frame.width - slideInMenuPadding))
         }
     }
 }
@@ -160,7 +122,7 @@ extension UIView {
         bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
     }
     
-    func ipadpinMenuTo(_ view: UIView, with constant: CGFloat) {
+    func ipadPinMenuTo(_ view: UIView, with constant: CGFloat) {
         view.addSubview(self)
         translatesAutoresizingMaskIntoConstraints = false
         topAnchor.constraint(equalTo: view.topAnchor).isActive = true
