@@ -37,9 +37,10 @@ class MailListViewController: UIViewController {
     @objc
     func slipOut(sender: UIPanGestureRecognizer) {
         let translation = sender.translation(in: self.menuView)
+        sender.maximumNumberOfTouches = 1
         guard let gestureView = sender.view else { return }
         guard (translation.x < 0 ) else { return }
-        gestureView.frame.origin = CGPoint(x: (self.pointOrigin?.x ?? -(self.view.frame.width - self.slideInMenuPadding)) + translation.x, y: 0)
+        gestureView.frame.origin = CGPoint(x: translation.x, y: 0)
         switch sender.state {
         case .began:
             UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0, options: .curveEaseOut, animations: {
@@ -52,7 +53,7 @@ class MailListViewController: UIViewController {
         case .ended:
             if -translation.x < gestureView.frame.width/2 {
                 UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0, options: .curveEaseOut, animations: {
-                    gestureView.transform = .identity
+                    gestureView.frame.origin = CGPoint(x: 0, y: 0)
                 })
             } else {
                 UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0, options: .curveEaseInOut) { [self] in
@@ -82,7 +83,7 @@ class MailListViewController: UIViewController {
     
     lazy var menuView: UIView = {
         let view = UIView()
-        pointOrigin = view.frame.origin
+        pointOrigin = CGPoint(x: 0, y: 0)
         view.backgroundColor = .green
         if UIDevice.current.userInterfaceIdiom == .phone {
             let gesture = UIPanGestureRecognizer(target: self, action: #selector(self.slipOut))
